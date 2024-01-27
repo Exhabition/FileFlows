@@ -16,6 +16,11 @@ public class SystemInfo
     public float CpuUsage { get; set; }
 
     /// <summary>
+    /// Gets the how much CPU is used by FFmpeg
+    /// </summary>
+    public float FfmpegUsage { get; set; }
+
+    /// <summary>
     /// Gets or sets if the system is paused
     /// </summary>
     public bool IsPaused { get; set; }

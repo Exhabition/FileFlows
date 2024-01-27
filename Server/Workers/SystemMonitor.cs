@@ -13,6 +13,7 @@ namespace FileFlows.Server.Workers;
 public class SystemMonitor:FileFlows.ServerShared.Workers.Worker
 {
     public readonly FixedSizedQueue<SystemValue<float>> CpuUsage = new (250);
+    public readonly FixedSizedQueue<SystemValue<float>> FfmpegUsage = new (250);
     public readonly FixedSizedQueue<SystemValue<float>> MemoryUsage = new (250);
     public readonly FixedSizedQueue<SystemValue<float>> OpenDatabaseConnections = new (250);
     public readonly FixedSizedQueue<SystemValue<long>> TempStorageUsage = new(250);
@@ -32,7 +33,8 @@ public class SystemMonitor:FileFlows.ServerShared.Workers.Worker
 
     protected override void Execute()
     {
-        var taskCpu = GetCpu();
+        var taskCpu = GetCpu(true);
+        var taskFfmpegCpu = GetCpu(false);
         var taskTempStorage = GetTempStorageSize();
         var taskLogStorage = GetLogStorageSize();
         var taskOpenDatabaseConnections = GetOpenDatabaseConnections();
@@ -42,10 +44,14 @@ public class SystemMonitor:FileFlows.ServerShared.Workers.Worker
             Value = GC.GetTotalMemory(true)
         });
 
-        Task.WaitAll(taskCpu, taskTempStorage, taskOpenDatabaseConnections);
+        Task.WaitAll(taskCpu, taskFfmpegCpu, taskTempStorage, taskOpenDatabaseConnections);
         CpuUsage.Enqueue(new ()
         {
             Value = taskCpu.Result
+        });
+        FfmpegUsage.Enqueue(new ()
+        {
+            Value = taskFfmpegCpu.Result
         });
         
         TempStorageUsage.Enqueue(new ()
@@ -65,15 +71,25 @@ public class SystemMonitor:FileFlows.ServerShared.Workers.Worker
         }
     }
 
-    private async Task<float> GetCpu()
+    private async Task<float> GetCpu(bool measureCurrentProcess = true, string processName = "ffmpeg.exe")
     {
         await Task.Delay(1);
         List<float> records = new List<float>();
         int max = 7;
+
         for (int i = 0; i <= max; i++)
         {
             var startTime = DateTime.UtcNow;
-            var startCpuUsage = Process.GetCurrentProcess().TotalProcessorTime;
+            var startCpuUsage = measureCurrentProcess
+                ? Process.GetCurrentProcess().TotalProcessorTime
+                : Process.GetProcessesByName(processName).FirstOrDefault()?.TotalProcessorTime;
+
+            if (startCpuUsage == null)
+            {
+                // Handle the case where the process is not found
+                return 0.0f;
+            }
+
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
@@ -81,15 +97,24 @@ public class SystemMonitor:FileFlows.ServerShared.Workers.Worker
 
             stopWatch.Stop();
             var endTime = DateTime.UtcNow;
-            var endCpuUsage = Process.GetCurrentProcess().TotalProcessorTime;
+            var endCpuUsage = measureCurrentProcess
+                ? Process.GetCurrentProcess().TotalProcessorTime
+                : Process.GetProcessesByName(processName).FirstOrDefault()?.TotalProcessorTime;
 
-            var cpuUsedMs = (endCpuUsage - startCpuUsage).TotalMilliseconds;
+            if (endCpuUsage == null)
+            {
+                // Handle the case where the process is not found
+                return 0.0f;
+            }
+
+            var cpuUsedMs = (endCpuUsage.Value - startCpuUsage.Value).TotalMilliseconds;
             var totalMsPassed = (endTime - startTime).TotalMilliseconds;
             var cpuUsageTotal = cpuUsedMs / (Environment.ProcessorCount * totalMsPassed);
 
             records.Add((float)(cpuUsageTotal * 100));
             if (i == max)
                 break;
+
             await Task.Delay(1000);
         }
 

@@ -31,6 +31,19 @@ public partial class CustomDashboard
             });
         }
 
+        if (DoesntHaveWidget(FileFlows.Shared.Widgets.FfmpegUsage.WD_UID))
+        {
+            fields.Add(new ElementField
+            {
+                InputType = FormInputType.Widget,
+                Name = nameof(FileFlows.Shared.Widgets.FfmpegUsage),
+                Parameters = new Dictionary<string, object>
+                {
+                    { nameof(InputWidget.Type), WidgetType.TimeSeries }
+                }
+            });
+        }
+
         if (DoesntHaveWidget(FileFlows.Shared.Widgets.MemoryUsage.WD_UID))
         {
             fields.Add(new ElementField

@@ -468,6 +468,7 @@
       "Title":"Widget",
       "Fields": {
         "CpuUsage": "CPU Usage",
+        "FfmpegUsage": "FFmpeg Usage",
         "MemoryUsage": "Memory Usage",
         "TempStorage": "Temporary Storage",
         "LogStorage": "Log Storage",

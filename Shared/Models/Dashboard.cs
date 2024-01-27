@@ -52,19 +52,25 @@ public class Dashboard: FileFlowObject
         // top row
         db.Widgets.Add(new ()
         {
-            Height = 1, Width = 3,
+            Height = 1, Width = 2,
             Y = rowIndex, X = 0,
             WidgetDefinitionUid = CpuUsage.WD_UID
         });
         db.Widgets.Add(new ()
         {
-            Height = 1, Width = 3,
-            Y = rowIndex, X = 3,
+            Height = 1, Width = 2,
+            Y = rowIndex, X = 2,
+            WidgetDefinitionUid = FfmpegUsage.WD_UID
+        });
+        db.Widgets.Add(new ()
+        {
+            Height = 1, Width = 2,
+            Y = rowIndex, X = 4,
             WidgetDefinitionUid = MemoryUsage.WD_UID
         });
         db.Widgets.Add(new ()
         {
-            Height = 1, Width = 3,
+            Height = 1, Width = 2,
             Y = rowIndex, X = 6,
             WidgetDefinitionUid = TempStorage.WD_UID
         });
@@ -73,8 +79,8 @@ public class Dashboard: FileFlowObject
         {
             db.Widgets.Add(new()
             {
-                Height = 1, Width = 3,
-                Y = rowIndex, X = 9,
+                Height = 1, Width = 2,
+                Y = rowIndex, X = 8,
                 WidgetDefinitionUid = ProcessingNodes.WD_UID
             });
         }
@@ -82,8 +88,8 @@ public class Dashboard: FileFlowObject
         {
             db.Widgets.Add(new()
             {
-                Height = 1, Width = 3,
-                Y = rowIndex, X = 9,
+                Height = 1, Width = 2,
+                Y = rowIndex, X = 8,
                 WidgetDefinitionUid = OpenDatabaseConnections.WD_UID
             });
         }
@@ -91,8 +97,8 @@ public class Dashboard: FileFlowObject
         {
             db.Widgets.Add(new()
             {
-                Height = 1, Width = 3,
-                Y = rowIndex, X = 9,
+                Height = 1, Width = 2,
+                Y = rowIndex, X = 8,
                 WidgetDefinitionUid = LogStorage.WD_UID
             });
         }

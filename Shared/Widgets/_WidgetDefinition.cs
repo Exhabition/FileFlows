@@ -30,6 +30,8 @@ public abstract class WidgetDefinition
             return new ComicPages();
         if (uid == CpuUsage.WD_UID)
             return new CpuUsage();
+        if (uid == FfmpegUsage.WD_UID)
+            return new FfmpegUsage();
         if (uid == ImageFormats.WD_UID)
             return new ImageFormats();
         if (uid == LibraryProcessingTimes.WD_UID)

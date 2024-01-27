@@ -135,6 +135,20 @@ public class SystemController:Controller
         var data = SystemMonitor.Instance.CpuUsage;
         return EaseData(data);
     }
+
+    /// <summary>
+    /// Gets history FFmpeg data of system information
+    /// </summary>
+    /// <param name="since">data since a date</param>
+    /// <returns>the history FFmpeg data</returns>
+    [HttpGet("history-data/ffmpeg")]
+    public IEnumerable<SystemValue<float>> GetFfmpegData([FromQuery] DateTime? since = null)
+    {
+        if (since != null)
+            return SystemMonitor.Instance.FfmpegUsage.Where(x => x.Time > since);
+        var data = SystemMonitor.Instance.FfmpegUsage;
+        return EaseData(data);
+    }
     
     /// <summary>
     /// Gets history memory data of system information
